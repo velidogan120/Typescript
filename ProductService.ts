@@ -7,11 +7,12 @@ export class ProductService implements IProductService{
     private dataSource: SimpleDataSource;
     constructor(){
         this.dataSource = new SimpleDataSource();
+        this.products = new Array<Product>();
         this.dataSource.getProducts().forEach(p => this.products.push(p));
     }
     
     getById(id: number): Product {
-        return this.products.filter(p => p.id == id)[0];
+        return this.products.filter(p => p.id === id)[0];
     }
     getProducts(): Product[] {
         return this.products;
@@ -19,12 +20,22 @@ export class ProductService implements IProductService{
     saveProduct(product: Product): void {
         if(product.id == 0 || product.id == null){
             product.id = this.generateId();
+            this.products.push(product);
         }else{
-            
+            let index;
+            for(let i in this.products){
+                if(this.products[i].id === product.id){
+                    index = i;
+                }
+            }
+            this.products.splice(index,1,product);
         }
     }
     deleteProduct(product: Product): void {
-        throw new Error("Method not implemented.");
+        let deleteId = this.products.indexOf(product);
+        if(deleteId > 0){
+            this.products.splice(deleteId,1);
+        }
     }
 
     private generateId(){
